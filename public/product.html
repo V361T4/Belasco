@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belasco Clothing – Product</title>
+<link rel="stylesheet" href="style.css" /></head><body>
+
+  <header class="nav nav--brand">
+  <div class="nav__inner container">
+    <ul class="nav__left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+
+    <a class="brand" href="index.html">BELASCO</a>
+
+    <ul class="nav__right">
+      <li><a href="cart.html">Cart</a></li>
+      <li><a href="orders.html">Orders</a></li>
+      <li><a href="auth.html">Login</a></li>
+    </ul>
+  </div>
+</header><section class="container" id="box"></section>
+
+  <footer><p>© 2025 Belasco Clothing</p></footer>
+
+<script src="app.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+(async ()=>{ try{
+  const p = await getProduct(id); document.title = 'Belasco Clothing – ' + p.name;
+  document.getElementById('box').innerHTML = `
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:20px;">
+      <div class="card"><img src="${p.image_url || 'https://via.placeholder.com/800x600'}" alt="${p.name}" /></div>
+      <div class="card" style="padding:16px">
+        <h2 style="margin-top:0">${p.name}</h2>
+        <div class="muted">Stock: ${p.stock}</div>
+        <p style="font-size:22px; font-weight:700">${formatINR(p.price)}</p>
+        <p>${p.description || 'No description available.'}</p>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <label>Qty</label>
+          <input id="qty" type="number" min="1" value="1" style="width:90px" />
+          <button class="btn" ${p.stock<=0 ? 'disabled' : ''} onclick="addToCart(${p.id}, Number(document.getElementById('qty').value)).then(()=>alert('Added'))">Add to Cart</button>
+        </div>
+      </div>
+    </div>`;
+} catch(e){ document.getElementById('box').innerHTML = '<div class="alert">Product not found.</div>'; }})();
+</script>
+</body></html>
+
+
+

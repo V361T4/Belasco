@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Belasco Clothing — Home</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Brand Navbar -->
+  <header class="nav nav--brand">
+    <div class="nav__inner container">
+      <ul class="nav__left">
+        <li><a href="index.html" class="is-active">Home</a></li>
+        <li class="has-dropdown">
+          <a href="shop.html">Shop</a>
+          <div class="dropdown">
+            <a href="shop.html?cat=men">Men</a>
+            <a href="shop.html?cat=women">Women</a>
+            <a href="shop.html?cat=accessories">Accessories</a>
+          </div>
+        </li>
+        <li class="has-dropdown">
+          <a href="#">About</a>
+          <div class="dropdown">
+            <a href="#">Our Story</a>
+            <a href="#">Sustainability</a>
+          </div>
+        </li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Exchange/Returns</a></li>
+      </ul>
+
+      <a class="brand" href="index.html">BELASCO</a>
+
+      <ul class="nav__right">
+        <li><a href="auth.html">Login</a></li>
+        <li><a href="#" aria-label="Search" onclick="document.getElementById('siteSearch').classList.toggle('open')">
+          <!-- search icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-3.6-3.6M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </a></li>
+        <li><a href="cart.html" aria-label="Cart">
+          <!-- cart icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6h14l-1.5 9h-12L5 3H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- (Dev) API bar – keep for now, hide with CSS if you want -->
+  <div class="devbar container">
+    <span id="tokenBadge" class="badge">Token: none</span>
+    <span style="margin-left:10px">API Base URL</span>
+    <input id="apiBaseInput" placeholder="http://127.0.0.1:8000" />
+    <button id="apiBaseSave">Save & Reload</button>
+  </div>
+
+  <!-- Search panel -->
+  <div class="searchbar" id="siteSearch">
+    <div class="container">
+      <input type="text" placeholder="Search products…" onkeydown="if(event.key==='Enter'){location.href='shop.html?search='+encodeURIComponent(this.value)}"/>
+      <button class="btn ghost" onclick="document.getElementById('siteSearch').classList.remove('open')">Close</button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero hero--full"
+    style="--hero-img: url('https://images.unsplash.com/photo-1520975922284-5c8da9f9f7e9?q=80&w=1600&auto=format&fit=crop');">
+    <div class="hero__overlay"></div>
+    <div class="hero__content container">
+      <h1>Shop the Range</h1>
+      <p>Elevate every day with foundational pieces and refined accessories.</p>
+      <a class="btn" href="shop.html">Shop Now</a>
+    </div>
+
+    <!-- promo pill bottom-left -->
+    <div class="promo-pill">
+      <strong>Limited time</strong> 10% Off
+    </div>
+  </section>
+
+  <!-- Featured products -->
+  <section class="container section">
+    <h3 class="section__title">Featured Products</h3>
+    <div id="featured" class="grid grid--cards"></div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 Belasco Clothing</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Render featured products
+    (async () => {
+      try {
+        const items = await listProducts();
+        const out = document.getElementById('featured');
+        out.innerHTML = items.slice(0,8).map(p => `
+          <article class="card">
+            <a href="product.html?id=${p.id}" class="card__media">
+              <img src="${p.image_url || 'https://via.placeholder.com/800x600'}" alt="${p.name}">
+            </a>
+            <div class="card__body">
+              <h4>${p.name}</h4>
+              <div class="muted">Stock: ${p.stock ?? '—'}</div>
+              <div class="card__row">
+                <span class="price">${formatINR(p.price)}</span>
+                <div class="card__actions">
+                  <a class="btn ghost" href="product.html?id=${p.id}">View</a>
+                  <button class="btn" ${p.stock<=0 ? 'disabled':''}
+                          onclick="addToCart(${p.id},1).then(()=>alert('Added'))">Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        `).join('');
+      } catch (e) {
+        document.getElementById('featured').innerHTML =
+          '<div class="alert">Could not load products.</div>';
+      }
+    })();
+
+    // Keep the small round cart badge in sync (uses existing app.js refreshNav)
+    document.addEventListener('cart:changed', updateCartBadge);
+    window.addEventListener('DOMContentLoaded', updateCartBadge);
+    async function updateCartBadge(){
+      try {
+        const c = await getCart();
+        const n = (c.items||[]).reduce((s,i)=> s + Number(i.quantity||0), 0);
+        const el = document.getElementById('cartBadge');
+        if (el) el.textContent = n > 99 ? '99+' : String(n);
+      } catch {
+        const el = document.getElementById('cartBadge');
+        if (el) el.textContent = '0';
+      }
+    }
+  </script>
+</body>
+</html>

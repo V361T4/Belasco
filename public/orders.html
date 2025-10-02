@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belasco Clothing – Orders</title>
+<link rel="stylesheet" href="style.css" /></head><body>
+
+  <header class="nav nav--brand">
+  <div class="nav__inner container">
+    <ul class="nav__left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+
+    <a class="brand" href="index.html">BELASCO</a>
+
+    <ul class="nav__right">
+      <li><a href="cart.html">Cart</a></li>
+      <li><a href="orders.html" class="is-active">Orders</a></li>
+      <li><a href="auth.html">Login</a></li>
+    </ul>
+  </div>
+</header><section class="container"><h2>My Orders</h2><div id="out"></div></section>
+
+  <footer><p>© 2025 Belasco Clothing</p></footer>
+
+<script src="app.js"></script>
+<script>
+(async ()=>{ try{
+  const list = await listOrders();
+  if(!list.length){ document.getElementById('out').innerHTML='<div class="card" style="padding:12px">No orders yet.</div>'; return; }
+  document.getElementById('out').innerHTML = list.map(o => `
+    <div class="card" style="padding:12px; margin-bottom:8px">
+      <strong>Order #${o.id}</strong> — ${o.status} — ${formatINR(o.total)}<br>
+      <span class="muted">${(o.items||[]).map(i => i.product.name + ' × ' + i.quantity).join(', ')}</span>
+    </div>
+  `).join('');
+} catch(e){ document.getElementById('out').innerHTML='<div class="alert">Please login to view orders.</div>'; } })();
+</script>
+</body></html>
+
+
+

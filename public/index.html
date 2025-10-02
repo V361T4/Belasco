@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belasco Clothing – Home</title>
+<link rel="stylesheet" href="style.css" /></head><body>
+
+  <header class="nav nav--brand">
+  <div class="nav__inner container">
+    <ul class="nav__left">
+      <li><a href="index.html" class="is-active">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+
+    <a class="brand" href="index.html">BELASCO</a>
+
+    <ul class="nav__right">
+      <li><a href="cart.html">Cart</a></li>
+      <li><a href="orders.html">Orders</a></li>
+      <li><a href="auth.html">Login</a></li>
+    </ul>
+  </div>
+</header><section class="hero hero--full" style="--hero-img: url('images/hero.jpg');">
+  <div class="hero__overlay"></div>
+  <div class="hero__content container">
+
+  <h2>Fresh Styles, Every Season</h2><p>Discover the latest trends in clothing at Belasco.</p>
+  <a class="btn" href="shop.html">Shop Now</a>
+  </div>
+</section>
+<section class="container"><h3>Featured Products</h3><div id="featured" class="grid cols-4"></div></section>
+
+  <footer><p>© 2025 Belasco Clothing</p></footer>
+
+<script src="app.js"></script>
+<script>
+(async ()=>{ try{ 
+  const items = await listProducts();
+  const box = document.getElementById('featured');
+  box.innerHTML = items.slice(0,8).map(p => `
+    <div class="card">
+      <img src="${p.image_url || 'https://via.placeholder.com/400x300'}" alt="${p.name}" />
+      <div class="body">
+        <h4>${p.name}</h4>
+        <div class="muted">Stock: ${p.stock}</div>
+        <p><strong>${formatINR(p.price)}</strong></p>
+        <div style="display:flex; gap:8px;">
+          <a class="btn ghost" href="product.html?id=${p.id}">View</a>
+          <button class="btn" ${p.stock<=0 ? 'disabled' : ''} onclick="addToCart(${p.id},1).then(()=>alert('Added'))">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+} catch(e){ document.getElementById('featured').innerHTML='<div class="alert">Could not load products.</div>'; }})();
+</script>
+</body></html>
+
+
+

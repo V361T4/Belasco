@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belasco Clothing – Cart</title>
+<link rel="stylesheet" href="style.css" /></head><body>
+
+  <header class="nav nav--brand">
+  <div class="nav__inner container">
+    <ul class="nav__left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+
+    <a class="brand" href="index.html">BELASCO</a>
+
+    <ul class="nav__right">
+      <li><a href="cart.html" class="is-active">Cart</a></li>
+      <li><a href="orders.html">Orders</a></li>
+      <li><a href="auth.html">Login</a></li>
+    </ul>
+  </div>
+</header><section class="container"><h2>Your Cart</h2><div id="out"></div></section>
+
+  <footer><p>© 2025 Belasco Clothing</p></footer>
+
+<script src="app.js"></script>
+<script>
+async function loadCartUI(){
+  try{
+    const c = await getCart();
+    if(!c.items || !c.items.length){ document.getElementById('out').innerHTML='<div class="card" style="padding:12px">Cart is empty.</div>'; return; }
+    const rows = c.items.map(i => `
+      <tr>
+        <td>${i.product.name}</td>
+        <td><input type="number" min="1" value="${i.quantity}" style="width:80px" onchange="updateCartItem(${i.id}, Number(this.value)).then(loadCartUI)" /></td>
+        <td>${formatINR(i.product.price)}</td>
+        <td>${formatINR(i.product.price * i.quantity)}</td>
+        <td><button class="btn danger" onclick="removeCartItem(${i.id}).then(loadCartUI)">Remove</button></td>
+      </tr>
+    `).join('');
+    const total = c.items.reduce((s,i)=> s + i.product.price * i.quantity, 0);
+    document.getElementById('out').innerHTML = `
+      <table class="table">
+        <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="display:flex; justify-content:space-between; margin-top:10px">
+        <div class="muted">Items: ${c.items.length}</div>
+        <div><strong>Total:</strong> ${formatINR(total)}</div>
+      </div>
+      <div style="margin-top:12px; text-align:right"><a class="btn" href="checkout.html">Proceed to Checkout</a></div>`;
+  } catch(e){ document.getElementById('out').innerHTML='<div class="alert">Please login to view your cart.</div>'; }
+}
+loadCartUI();
+</script>
+</body></html>
+
+
+

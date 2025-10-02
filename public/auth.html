@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Belasco Clothing – Login / Register</title>
+<link rel="stylesheet" href="style.css" /></head><body>
+
+  <header class="nav nav--brand">
+  <div class="nav__inner container">
+    <ul class="nav__left">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+    </ul>
+
+    <a class="brand" href="index.html">BELASCO</a>
+
+    <ul class="nav__right">
+      <li><a href="cart.html">Cart</a></li>
+      <li><a href="orders.html">Orders</a></li>
+      <li><a href="auth.html" class="is-active">Login</a></li>
+    </ul>
+  </div>
+</header><section class="container">
+  <div class="grid" style="grid-template-columns:1fr 1fr; gap:16px;">
+    <div class="card" style="padding:16px">
+      <h3 style="margin-top:0">Login</h3>
+      <form id="loginForm" class="form-grid">
+        <label>Email</label><input id="lemail" type="email" required />
+        <label>Password</label><input id="lpass" type="password" required />
+        <div></div><button class="btn" type="submit">Login</button>
+      </form>
+      <div id="lout" style="margin-top:10px"></div>
+    </div>
+    <div class="card" style="padding:16px">
+      <h3 style="margin-top:0">Register</h3>
+      <form id="regForm" class="form-grid">
+        <label>Name</label><input id="rname" required />
+        <label>Email</label><input id="remail" type="email" required />
+        <label>Password</label><input id="rpass" type="password" required />
+        <div></div><button class="btn" type="submit">Create account</button>
+      </form>
+      <div id="rout" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div class="card" style="padding:16px; margin-top:16px">
+    <button class="btn danger" id="logoutBtn">Logout</button>
+  </div>
+</section>
+
+  <footer><p>© 2025 Belasco Clothing</p></footer>
+
+<script src="app.js"></script>
+<script>
+qs('#loginForm').addEventListener('submit', async (e)=>{ e.preventDefault();
+  try{ const status = await loginUser(qs('#lemail').value, qs('#lpass').value);
+    qs('#lout').innerHTML = '<div class="success">Logged in (' + (status===200?'token':'SPA cookie') + ')</div>';
+  } catch(e){ qs('#lout').innerHTML = '<div class="alert">' + (e.message||'Login failed') + '</div>'; }
+});
+qs('#regForm').addEventListener('submit', async (e)=>{ e.preventDefault();
+  try{ const user = await registerUser(qs('#rname').value, qs('#remail').value, qs('#rpass').value);
+    qs('#rout').innerHTML = '<div class="success">Registered as ' + user.name + '</div>';
+  } catch(e){ qs('#rout').innerHTML = '<div class="alert">' + (e.message||'Registration failed') + '</div>'; }
+});
+qs('#logoutBtn').addEventListener('click', async ()=>{ try{ await logoutUser(); alert('Logged out'); } catch{ alert('Failed to logout'); } });
+</script>
+</body></html>
+
+
+
